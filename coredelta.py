@@ -24,7 +24,7 @@ def download_model_weights():
 def load_model():
     path = download_model_weights()
     model = fasterrcnn_resnet50_fpn(pretrained=False, num_classes=3)  # Update num_classes accordingly
-    model.load_state_dict(torch.load(path, map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load(path, map_location=torch.device('cpu')),weights_only=False)
     model.eval()
     return model
 
