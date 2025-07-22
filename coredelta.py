@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 import gdown
 import os
 
-# Google Drive file ID and local path
+# Google Drive file ID and local model path
 GDRIVE_FILE_ID = '1XCxew13_vNiF-dczi39DErRyu1ftqhvS'  # Replace with your actual file ID
 MODEL_PATH = 'fasterrcnn_model.pth'
 
@@ -19,12 +19,14 @@ def download_model_weights():
         gdown.download(url, MODEL_PATH, quiet=False)
     return MODEL_PATH
 
-# Load model
+# Load Faster R-CNN model
 @st.cache_resource
 def load_model():
     path = download_model_weights()
-    model = fasterrcnn_resnet50_fpn(pretrained=False, num_classes=3)  # Update num_classes accordingly
-    model.load_state_dict(torch.load(path, map_location=torch.device('cpu')),weights_only=False)
+    model = fasterrcnn_resnet50_fpn(pretrained=False, num_classes=3)  # Adjust num_classes
+    # Explicitly set weights_only=False for PyTorch 2.6+
+    state_dict = torch.load(path, map_location=torch.device('cpu'), weights_only=False)
+    model.load_state_dict(state_dict)
     model.eval()
     return model
 
@@ -33,7 +35,7 @@ transform = T.Compose([
     T.ToTensor()
 ])
 
-# Draw bounding boxes
+# Draw bounding boxes and labels
 def draw_boxes(image, boxes, labels, scores, threshold=0.7):
     draw = ImageDraw.Draw(image)
     for box, label, score in zip(boxes, labels, scores):
@@ -43,7 +45,7 @@ def draw_boxes(image, boxes, labels, scores, threshold=0.7):
     return image
 
 # Streamlit UI
-st.title("Fingerprint Detection with Faster R-CNN")
+st.title("Fingerprint Detection using Faster R-CNN")
 
 uploaded_file = st.file_uploader("Upload a fingerprint image", type=["jpg", "jpeg", "png"])
 if uploaded_file:
@@ -51,7 +53,7 @@ if uploaded_file:
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
     model = load_model()
-    img_tensor = transform(image).unsqueeze(0)  # add batch dimension
+    img_tensor = transform(image).unsqueeze(0)  # Add batch dimension
 
     with st.spinner("Running detection..."):
         with torch.no_grad():
@@ -61,7 +63,7 @@ if uploaded_file:
     labels = outputs['labels']
     scores = outputs['scores']
 
-    # Draw results
+    # Draw results on the image
     result_image = image.copy()
     result_image = draw_boxes(result_image, boxes, labels, scores, threshold=0.7)
 
