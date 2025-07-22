@@ -19,7 +19,7 @@ if not os.path.exists(MODEL_PATH):
 # Load the model with weights_only=False
 @st.cache_resource
 def load_model():
-    model = torch.load(MODEL_PATH, map_location=torch.device('cpu'), weights_only=False)
+    model = torch.load(MODEL_PATH, map_location=torch.device('cpu'), weights_only=True)
     model.eval()
     return model
 
