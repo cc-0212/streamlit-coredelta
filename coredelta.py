@@ -1,17 +1,16 @@
 import streamlit as st
 import torch
-import torchvision
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 import torchvision.transforms as T
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import gdown
 import os
 
-# Google Drive file ID and local model path
-GDRIVE_FILE_ID = '1XCxew13_vNiF-dczi39DErRyu1ftqhvS'  # Replace with your actual file ID
+# Google Drive file ID and model path
+GDRIVE_FILE_ID = '1XCxew13_vNiF-dczi39DErRyu1ftqhvS'
 MODEL_PATH = 'fasterrcnn_model.pth'
 
-# Download model weights from Google Drive
+# Download model from Google Drive
 @st.cache_resource
 def download_model_weights():
     if not os.path.exists(MODEL_PATH):
@@ -19,12 +18,11 @@ def download_model_weights():
         gdown.download(url, MODEL_PATH, quiet=False)
     return MODEL_PATH
 
-# Load Faster R-CNN model
+# Load the model
 @st.cache_resource
 def load_model():
     path = download_model_weights()
-    model = fasterrcnn_resnet50_fpn(pretrained=False, num_classes=3)  # Adjust num_classes
-    # Explicitly set weights_only=False for PyTorch 2.6+
+    model = fasterrcnn_resnet50_fpn(pretrained=False, num_classes=3)
     state_dict = torch.load(path, map_location=torch.device('cpu'), weights_only=False)
     model.load_state_dict(state_dict)
     model.eval()
@@ -36,13 +34,34 @@ transform = T.Compose([
 ])
 
 # Draw bounding boxes and labels
+from PIL import ImageDraw, ImageFont
+
 def draw_boxes(image, boxes, labels, scores, threshold=0.7):
     draw = ImageDraw.Draw(image)
+    try:
+        # Load a larger TrueType font
+        font = ImageFont.truetype("arial.ttf", size=20)
+    except:
+        # Fallback to default if arial not available
+        font = ImageFont.load_default()
+
+    highlight_green = (0, 255, 0)  # Bright highlight green
+
     for box, label, score in zip(boxes, labels, scores):
         if score >= threshold:
-            draw.rectangle(box.tolist(), outline="red", width=3)
-            draw.text((box[0], box[1]), f"{label}: {score:.2f}", fill="red")
+            label_text = "core" if label == 1 else "delta" if label == 2 else str(label.item())
+            box = box.tolist()
+
+            # Draw rectangle
+            draw.rectangle(box, outline=highlight_green, width=3)
+
+            # Draw label text above the box
+            text_position = (box[0], max(0, box[1] - 25))  # Raise text a bit more for larger font
+            draw.text(text_position, f"{label_text} ({score:.2f})", fill=highlight_green, font=font)
+
     return image
+
+
 
 # Streamlit UI
 st.title("Fingerprint Detection using Faster R-CNN")
@@ -63,7 +82,6 @@ if uploaded_file:
     labels = outputs['labels']
     scores = outputs['scores']
 
-    # Draw results on the image
     result_image = image.copy()
     result_image = draw_boxes(result_image, boxes, labels, scores, threshold=0.7)
 
