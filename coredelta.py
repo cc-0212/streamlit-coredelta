@@ -7,6 +7,19 @@ import numpy as np
 from PIL import Image
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
+import os
+import urllib.request
+
+# Path to save the model locally
+model_path = "fasterrcnn_model.pth"
+
+# Only download if not already present
+if not os.path.exists(model_path):
+    with st.spinner("Downloading model..."):
+        url = "https://drive.google.com/uc?export=download&id=1XCxew13_vNiF-dczi39DErRyu1ftqhvS"
+        urllib.request.urlretrieve(url, model_path)
+
+
 # Set page config
 st.set_page_config(page_title="Fingerprint Detection", layout="centered")
 
