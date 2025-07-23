@@ -38,8 +38,8 @@ def draw_boxes(image, boxes, labels, scores, threshold=0.7):
     draw = ImageDraw.Draw(image)
     try:
         font = ImageFont.truetype("arial.ttf", size=40)
-    except:
-        font = ImageFont.load_default()
+    #except:
+        #font = ImageFont.load_default()
 
     for box, label, score in zip(boxes, labels, scores):
         if score >= threshold:
