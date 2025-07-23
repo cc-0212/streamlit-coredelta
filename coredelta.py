@@ -7,7 +7,7 @@ import gdown
 import os
 
 # Google Drive file ID and model path
-GDRIVE_FILE_ID = '1XCxew13_vNiF-dczi39DErRyu1ftqhvS'
+GDRIVE_FILE_ID = '1_vvApPVrPACZc8mGY_zYfYjV1GmKXlNF'
 MODEL_PATH = 'fasterrcnn_model.pth'
 
 # Download model from Google Drive
