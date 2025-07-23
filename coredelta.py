@@ -70,7 +70,11 @@ st.title("Fingerprint Detection using Faster R-CNN")
 uploaded_file = st.file_uploader("Upload a fingerprint image", type=["jpg", "jpeg", "png"])
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+
+    # ? Resize image to 640x640
+    image = image.resize((640, 640))
+
+    st.image(image, caption="Resized Input Image (640x640)", use_column_width=True)
 
     model = load_model()
     img_tensor = transform(image).unsqueeze(0)  # Add batch dimension
