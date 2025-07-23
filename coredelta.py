@@ -41,7 +41,7 @@ def draw_boxes(image, boxes, labels, scores, threshold=0.7):
 
     try:
         # ✅ Use a scalable font that’s commonly available on Linux (e.g., Streamlit Cloud)
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size=24)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", size=18)
     except:
         font = ImageFont.load_default()
 
