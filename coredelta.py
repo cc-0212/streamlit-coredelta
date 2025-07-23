@@ -37,7 +37,7 @@ transform = T.Compose([
 def draw_boxes(image, boxes, labels, scores, threshold=0.7):
     draw = ImageDraw.Draw(image)
     try:
-        font = ImageFont.truetype("arial.ttf", size=40)
+        font = ImageFont.truetype("assets/arial.ttf", size=24)
     except:
         font = ImageFont.load_default()
 
