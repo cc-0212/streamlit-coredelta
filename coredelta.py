@@ -68,7 +68,7 @@ if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
 
     # ? Resize image to 640x640
-    image = image.resize((640, 640))
+    image = image.resize((800, 800))
 
     st.image(image, caption="Resized Input Image (640x640)", use_column_width=True)
 
